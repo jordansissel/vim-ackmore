@@ -13,7 +13,8 @@ function! AckCurrentWord(ackmethod)
     let b:gitroot=system("git rev-parse --show-toplevel")
   endif
 
-  execute ackmethod . " <cword> " . b:gitroot
+  " a:ackmethod will be 'Ack' or 'LAck'
+  execute a:ackmethod . " <cword> " . b:gitroot
 endfunction
 
 function! QFOpenCurrentInNewTab() 
