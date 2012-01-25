@@ -5,8 +5,11 @@ nnoremap <Leader>a :call AckCurrentWord("LAck")<CR>
 nnoremap <Leader>A :call AckCurrentWord("Ack")
 " Map 't' on the quickfix window to open the file:line selected
 autocmd FileType qf nnoremap t :call QFOpenCurrentInNewTab()<CR>
+" Map 'q' to close the quickfix window
+autocmd FileType qf nnoremap q :cclose<CR>
 
 function! AckCurrentWord(ackmethod)
+  " Find the git root if we don't already know it.
   if !exists("b:gitroot")
     " Keep track of the root of the current git repo, if any.
     " TODO(sissel): Probably should put this in a separate plugin
@@ -14,6 +17,7 @@ function! AckCurrentWord(ackmethod)
   endif
 
   " a:ackmethod will be 'Ack' or 'LAck'
+  " Run Ack on the current word based on the git root.
   execute a:ackmethod . " <cword> " . b:gitroot
 endfunction
 
