@@ -6,7 +6,7 @@ nnoremap <Leader>A :call AckCurrentWord("Ack")
 " Map 't' on the quickfix window to open the file:line selected
 autocmd FileType qf nnoremap t :call QFOpenCurrentInNewTab()<CR>
 " Map 'q' to close the quickfix window
-autocmd FileType qf nnoremap q :cclose<CR>
+autocmd FileType qf nnoremap q :cclose<CR>:lclose<CR>
 
 function! AckCurrentWord(ackmethod)
   " Find the git root if we don't already know it.
