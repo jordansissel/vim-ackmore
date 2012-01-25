@@ -1,13 +1,20 @@
 " Ack integration.
-" Keep track of the root of the current git repo, if any.
-" TODO(sissel): Probably should put this in a separate plugin
-autocmd BufNewFile,BufRead * let b:gitroot=system("git rev-parse --show-toplevel")
 
 " Run Ack on the current word starting at the root of this git repo
-nnoremap <Leader>a :execute "LAck <cword> " . b:gitroot<CR>
-nnoremap <Leader>A :execute "Ack <cword> " . b:gitroot<CR>
+nnoremap <Leader>a :call AckCurrentWord("LAck")<CR>
+nnoremap <Leader>A :call AckCurrentWord("Ack")
 " Map 't' on the quickfix window to open the file:line selected
 autocmd FileType qf nnoremap t :call QFOpenCurrentInNewTab()<CR>
+
+function! AckCurrentWord(ackmethod)
+  if !exists("b:gitroot")
+    " Keep track of the root of the current git repo, if any.
+    " TODO(sissel): Probably should put this in a separate plugin
+    let b:gitroot=system("git rev-parse --show-toplevel")
+  endif
+
+  execute ackmethod . " <cword> " . b:gitroot
+endfunction
 
 function! QFOpenCurrentInNewTab() 
   " For some reason getqflist() and getloclist() don't seem to work
