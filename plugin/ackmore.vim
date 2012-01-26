@@ -12,8 +12,8 @@ autocmd FileType qf nnoremap <buffer> t :call QFOpenCurrentInNewTab()<CR>
 autocmd FileType qf nnoremap <buffer> q :cclose<CR>:lclose<CR>
 
 " Make some commands that invoke functions.
-command! -nargs=1 -range AckVisualRange call s:AckVisualRange(<f-args>)
-command! -nargs=1 AckCurrentWord call s:AckCurrentWord(<f-args>)
+command! -nargs=1 -range AckVisualRange call AckVisualRange(<f-args>)
+command! -nargs=1 AckCurrentWord call AckCurrentWord(<f-args>)
 
 function! SetGitRoot()
   if !exists("b:gitroot")
@@ -23,7 +23,7 @@ function! SetGitRoot()
   endif
 endfunction " SetGitRoot
 
-function! s:AckCurrentWord(ackmethod)
+function! AckCurrentWord(ackmethod)
   " Find the git root if we don't already know it.
   call SetGitRoot()
 
@@ -32,7 +32,7 @@ function! s:AckCurrentWord(ackmethod)
   execute a:ackmethod . " <cword> " . b:gitroot
 endfunction " AckCurrentWord
 
-function! s:AckVisualRange(cmd)
+function! AckVisualRange(cmd)
   " Copy 'z' register
   let l:oldz = getreg("z")
 
