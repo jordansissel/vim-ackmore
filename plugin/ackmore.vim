@@ -15,6 +15,7 @@ autocmd FileType qf nnoremap <buffer> q :cclose<CR>:lclose<CR>
 command! -nargs=1 -range AckVisualRange call AckVisualRange(<f-args>)
 command! -nargs=1 AckCurrentWord call AckCurrentWord(<f-args>)
 
+autocmd BufEnter * call SetGitRoot()
 function! SetGitRoot()
   if !exists("b:gitroot")
     " Keep track of the root of the current git repo, if any.
