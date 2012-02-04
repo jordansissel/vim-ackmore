@@ -20,7 +20,7 @@ function! SetGitRoot()
   if !exists("b:gitroot")
     " Keep track of the root of the current git repo, if any.
     " TODO(sissel): Probably should put this in a separate plugin
-    let b:gitroot=system("git rev-parse --show-toplevel")
+    let b:gitroot=system("git rev-parse --show-toplevel | tr -d '\n'")
   endif
 endfunction " SetGitRoot
 
