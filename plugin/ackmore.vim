@@ -6,11 +6,6 @@ nnoremap <Leader>A :AckCurrentWord Ack<CR>
 vnoremap <Leader>a :AckVisualRange LAck<CR>
 vnoremap <Leader>A :AckVisualRange Ack<CR>
 
-" Map 't' on the quickfix window to open the file:line selected
-autocmd FileType qf nnoremap <buffer> t :call QFOpenCurrentInNewTab()<CR>
-" Map 'q' to close the quickfix window
-autocmd FileType qf nnoremap <buffer> q :cclose<CR>:lclose<CR>
-
 " Make some commands that invoke functions.
 command! -nargs=1 -range AckVisualRange call AckVisualRange(<f-args>)
 command! -nargs=1 AckCurrentWord call AckCurrentWord(<f-args>)
@@ -31,6 +26,7 @@ function! AckCurrentWord(ackmethod)
   " a:ackmethod will be 'Ack' or 'LAck'
   " Run Ack on the current word based on the git root.
   execute a:ackmethod . " <cword> " . b:gitroot
+  call QfMappings()
 endfunction " AckCurrentWord
 
 function! AckVisualRange(cmd)
@@ -48,9 +44,10 @@ function! AckVisualRange(cmd)
   " Do it.
   call SetGitRoot()
   execute a:cmd l:string b:gitroot
+  call QfMappings()
 endfunction
 
-function! QFOpenCurrentInNewTab() 
+function! QFOpenCurrentInNewTab()
   " For some reason getqflist() and getloclist() don't seem to work
   " when Ack is being used. So we have to do this instead.
   let l:line = line(".") " Get the current line number
@@ -61,3 +58,9 @@ function! QFOpenCurrentInNewTab()
   execute "tabe +" . l:values[1] . " " . l:values[0]
 endfunction
 
+function! QfMappings()
+  " Map 't' on the quickfix window to open the file:line selected
+  exec "nnoremap <buffer> t :call QFOpenCurrentInNewTab()<CR>"
+  " Map 'q' to close the quickfix window
+  exec "nnoremap <buffer> q :cclose<CR>:lclose<CR>"
+endfunction
