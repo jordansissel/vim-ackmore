@@ -2,9 +2,9 @@
 
 Stuff to make the 'ack' plugin more useful
 
-It's git-aware and knows the root directory of your git repo.
+It's git and svn-aware and knows the root directory of your repo.
 
-* Maps \a to :LAck the current word starting at the git root
+* Maps \a to :LAck the current word starting at the repo root
 * Maps \A to :Ack ...
 * Maps the above, in visual mode, to use the current selection instead
   of the current word.
