@@ -1,6 +1,6 @@
 " Ack integration.
 
-" Run Ack on the current word starting at the root of this git repo
+" Run Ack on the current word starting at the root of this repo
 nnoremap <Leader>a :AckCurrentWord LAck<CR>
 nnoremap <Leader>A :AckCurrentWord Ack<CR>
 vnoremap <Leader>a :AckVisualRange LAck<CR>
@@ -10,22 +10,38 @@ vnoremap <Leader>A :AckVisualRange Ack<CR>
 command! -nargs=1 -range AckVisualRange call AckVisualRange(<f-args>)
 command! -nargs=1 AckCurrentWord call AckCurrentWord(<f-args>)
 
-autocmd BufEnter * call SetGitRoot()
-function! SetGitRoot()
-  if !exists("b:gitroot")
-    " Keep track of the root of the current git repo, if any.
+autocmd BufEnter * call SetVcsRoot()
+function! SetVcsRoot()
+  if !exists("b:vcsroot")
+    " Keep track of the root of the current git or svn repo, if any.
     " TODO(sissel): Probably should put this in a separate plugin
-    let b:gitroot=system("git rev-parse --show-toplevel | tr -d '\n'")
+    let b:vcsroot = system("git rev-parse --show-toplevel")
+    if v:shell_error == 0
+        let b:vcsroot = substitute(b:vcsroot, '\n$', '', '')
+        let b:vcsroot_type = 'git'
+        return
+    endif
+    let b:vcsroot = system("svn info|grep 'Working Copy Root Path:'")
+    if v:shell_error == 0
+        let b:vcsroot = substitute(b:vcsroot, 'Working Copy Root Path: ', '', '')
+        let b:vcsroot = substitute(b:vcsroot, '\n$', '', '')
+        let b:vcsroot_type = 'svn'
+        return
+    endif
+    " if we didn't return a value yet, erase what we have so we don't
+    " pass error text into ack searches
+    let b:vcsroot = ''
+    let b:vcsroot_type = 'none'
   endif
-endfunction " SetGitRoot
+endfunction " SetVcsRoot
 
 function! AckCurrentWord(ackmethod)
-  " Find the git root if we don't already know it.
-  call SetGitRoot()
+  " Find the VCS repo root if we don't already know it.
+  call SetVcsRoot()
 
   " a:ackmethod will be 'Ack' or 'LAck'
-  " Run Ack on the current word based on the git root.
-  execute a:ackmethod . " <cword> " . b:gitroot
+  " Run Ack on the current word based on the repository root.
+  execute a:ackmethod . " <cword> " . b:vcsroot
   call QfMappings()
 endfunction " AckCurrentWord
 
@@ -42,8 +58,8 @@ function! AckVisualRange(cmd)
   call setreg("z", l:oldz)
 
   " Do it.
-  call SetGitRoot()
-  execute a:cmd l:string b:gitroot
+  call SetVcsRoot()
+  execute a:cmd l:string b:vcsroot
   call QfMappings()
 endfunction
 
